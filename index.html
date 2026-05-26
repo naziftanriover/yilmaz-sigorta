@@ -855,6 +855,10 @@
   .more-menu-overlay { display: none; }
   .more-menu-sheet   { display: none; }
 
+
+  .page-top-pad { padding: 28px 28px 0; }
+  .page-bot-pad { padding: 0 28px 28px; }
+
   @media (max-width: 768px) {
     /* ── TEMEL LAYOUT ── */
     html, body {
@@ -1000,6 +1004,102 @@
       display: flex !important; align-items: center !important;
       justify-content: center !important; padding: 0 3px !important;
     }
+  
+    /* ── MOBİLDE ÇİFT BAŞLIĞI GİZLE ── */
+    .page-header-bar { display: none !important; }
+
+    /* ── TOPBAR COMPACT ── */
+    .topbar {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      gap: 8px !important;
+      flex-wrap: nowrap !important;
+    }
+    .topbar > div:first-child { flex-shrink: 0; }
+    .topbar-actions { flex: 1; justify-content: flex-end; }
+    .topbar-actions .btn { padding: 7px 12px !important; font-size: 12px !important; }
+    .search-box { display: none !important; }
+
+    /* ── TABLO YATAY SCROLL ── */
+    .table-wrap {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      border-radius: 8px !important;
+    }
+    table { min-width: 480px !important; font-size: 12px !important; }
+    th, td { padding: 8px 10px !important; }
+
+    /* ── MOBİL FILTER BAR ── */
+    .filter-bar {
+      flex-direction: column !important;
+      gap: 8px !important;
+      padding: 10px !important;
+    }
+    .filter-bar select, .filter-bar input { width: 100% !important; font-size: 13px !important; }
+
+    /* ── STATS CARD COMPACT ── */
+    .stat-card { padding: 12px !important; }
+    .stat-card .stat-val { font-size: 18px !important; }
+    .stat-card .stat-label { font-size: 11px !important; }
+
+    /* ── YENİ MÜŞTERİ BUTONU - topbar'da göster ── */
+    .page .btn-primary[onclick*="openAddModal"] { display: none !important; }
+
+  
+    /* ── SAYFA İÇ PADDING MOBİL ── */
+    .page > div[style*="padding:28px"],
+    .page > div[style*="padding: 28px"] {
+      padding: 12px 12px 0 !important;
+    }
+    .page > div[style*="padding:0 28px"],
+    .page > div[style*="padding: 0 28px"] {
+      padding: 0 12px 12px !important;
+    }
+
+    /* ── TABLO WRAP ── */
+    .table-wrap {
+      overflow-x: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+      margin: 0 -4px !important;
+    }
+    table { min-width: 560px !important; }
+    th, td { padding: 8px 8px !important; font-size: 12px !important; white-space: nowrap; }
+
+    /* ── KART PADDING ── */
+    .card { padding: 10px !important; border-radius: 10px !important; }
+
+    /* ── FİLTRE BAR ── */
+    .filter-bar {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      padding: 8px 0 !important;
+      align-items: center !important;
+    }
+    .filter-bar > i { display: none !important; }
+    .filter-bar input {
+      flex: 1 1 100% !important;
+      min-width: 0 !important;
+      font-size: 14px !important;
+      padding: 9px 12px !important;
+    }
+    .filter-bar select {
+      flex: 1 1 calc(50% - 4px) !important;
+      font-size: 12px !important;
+      padding: 8px 8px !important;
+    }
+    .filter-bar .btn { width: 100% !important; }
+
+    /* ── TOPBAR YENİ MÜŞTERİ BUTONU GÖSTERİ ── */
+    .topbar-actions .btn-primary { display: flex !important; }
+    .topbar-actions .btn-secondary,
+    .topbar-actions .btn:not(.btn-primary) { display: none !important; }
+
+  
+    .page-top-pad { padding: 12px 12px 0 !important; }
+    .page-bot-pad { padding: 0 12px 12px !important; }
+
   }
 
 </style>
@@ -1452,7 +1552,7 @@
   </div>
   <!-- ════ PAGE: MÜŞTERİLER ════ -->
   <div class="page" id="page-musteriler">
-    <div style="padding:28px 28px 0;">
+    <div class="page-top-pad">
       <div class="page-header-bar">
         <div>
           <h2>Tüm Müşteriler</h2>
@@ -1464,7 +1564,7 @@
       </div>
     </div>
 
-    <div style="padding:0 28px 28px;">
+    <div class="page-bot-pad">
       <div class="card">
         <div class="filter-bar">
           <i class="fas fa-filter" style="color:var(--text-light)"></i>
@@ -1486,6 +1586,7 @@
           </select>
           <button class="btn btn-secondary" onclick="clearFilters()"><i class="fas fa-times"></i> Temizle</button>
         </div>
+        <div class="table-wrap">
         <table>
           <thead>
             <tr>
@@ -1503,6 +1604,7 @@
           </thead>
           <tbody id="main-tbody"></tbody>
         </table>
+        </div>
         <div class="pagination">
           <span id="pagination-info">0 müşteri</span>
           <div class="pagination-btns" id="pagination-btns"></div>
@@ -1513,7 +1615,7 @@
 
   <!-- ════ PAGE: YAKLAŞAN POLİÇELER ════ -->
   <div class="page" id="page-yaklasan">
-    <div style="padding:28px 28px 0;">
+    <div class="page-top-pad">
       <div class="page-header-bar">
         <div>
           <h2><i class="fas fa-bell" style="color:var(--danger)"></i> Yaklaşan Poliçeler</h2>
@@ -1521,7 +1623,7 @@
         </div>
       </div>
     </div>
-    <div style="padding:0 28px 28px;">
+    <div class="page-bot-pad">
       <div class="card">
         <div class="filter-bar">
           <i class="fas fa-filter" style="color:var(--text-light)"></i>
