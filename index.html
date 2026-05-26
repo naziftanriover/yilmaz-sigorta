@@ -323,7 +323,7 @@
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    overflow: hidden;
+    overflow: visible;
   }
 
   .card-header {
@@ -907,7 +907,7 @@
 
     /* TABLO - yatay scroll */
     .table-wrap { overflow-x: scroll !important; -webkit-overflow-scrolling: touch !important; width: 100% !important; }
-    .table-wrap table { min-width: 550px !important; table-layout: fixed !important; }
+    .table-wrap table { min-width: 550px !important; table-layout: auto !important; width: max-content !important; max-width: none !important; }
     .table-wrap th, .table-wrap td { padding: 7px 8px !important; font-size: 11px !important; }
     .table-wrap th:nth-child(5),
     .table-wrap td:nth-child(5) { display: none !important; }
@@ -979,6 +979,58 @@
 
     /* ALT MENÜ MOBİLDE TAM */
     .bottom-nav { padding-bottom: env(safe-area-inset-bottom, 0) !important; }
+
+  
+    /* ── OPUS DÜZELTMELERİ ── */
+
+    /* CARD overflow:hidden scroll'u keser → visible yap */
+    .card { overflow: visible !important; }
+
+    /* TABLE-WRAP genel tanım */
+    .table-wrap {
+      overflow-x: auto !important;
+      overflow-y: visible !important;
+      -webkit-overflow-scrolling: touch !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      display: block !important;
+    }
+
+    /* NTH-CHILD hide — sadece ana müşteri tablosuna uygula, diğerlerini bozma */
+    .table-wrap th:nth-child(5),
+    .table-wrap td:nth-child(5) { display: table-cell !important; }
+    .table-wrap th:nth-child(6),
+    .table-wrap td:nth-child(6) { display: table-cell !important; }
+
+    /* iOS Safari 100vh sorunu */
+    .app  { height: 100dvh !important; }
+    .main { height: calc(100dvh - 64px) !important; }
+
+    /* DASHBOARD inline padding override */
+    #page-dashboard .stats-grid,
+    #page-dashboard .card,
+    #page-dashboard .alert-section { max-width: 100% !important; }
+    #page-dashboard > div { padding: 10px !important; }
+
+    /* VERESIYE 3 sütun → mobil */
+    #page-veresiye > div > div[style*="grid-template-columns:repeat(3"] {
+      grid-template-columns: 1fr 1fr 1fr !important;
+      gap: 8px !important;
+      margin-bottom: 14px !important;
+    }
+    #page-veresiye > div > div[style*="grid-template-columns:repeat(3"] > div {
+      padding: 12px 8px !important;
+      border-radius: 12px !important;
+    }
+    #page-veresiye > div > div[style*="grid-template-columns:repeat(3"] > div > div:last-child {
+      font-size: 18px !important;
+    }
+
+    /* VERESIYE arama kutusu */
+    #ver-search { width: 100% !important; box-sizing: border-box !important; }
+
+    /* ALERT GRID tek sütun */
+    .alert-grid { grid-template-columns: 1fr !important; }
 
   }
 
