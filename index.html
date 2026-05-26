@@ -857,6 +857,7 @@
 
 
   .page-top-pad { padding: 28px 28px 0; }
+  .page-dash-wrap { padding: 20px; }
   .page-rapor-wrap { padding: 28px; }
   .page-bot-pad { padding: 0 28px 28px; }
 
@@ -955,6 +956,29 @@
     /* GİRİŞ EKRANI MOBİL */
     .login-box { padding: 28px 20px !important; }
     .login-title { font-size: 19px !important; }
+
+  
+    /* DASHBOARD MOBİL */
+    .page-dash-wrap { padding: 10px !important; }
+
+    /* VERESİYE MOBİL */
+    #page-veresiye > div { padding: 10px !important; }
+    #page-veresiye > div > div[style*="grid-template-columns:repeat(3"] {
+      grid-template-columns: 1fr 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    #page-veresiye > div > div[style*="grid-template-columns:repeat(3"] > div {
+      padding: 12px 8px !important;
+    }
+    #page-veresiye > div > div[style*="grid-template-columns:repeat(3"] > div > div:last-child {
+      font-size: 18px !important;
+    }
+
+    /* STATS İÇ YAZI */
+    .stats-grid .stat-card h3 { font-size: 16px !important; }
+
+    /* ALT MENÜ MOBİLDE TAM */
+    .bottom-nav { padding-bottom: env(safe-area-inset-bottom, 0) !important; }
 
   }
 
@@ -1279,20 +1303,20 @@
           <div class="card-header">
             <h3><i class="fas fa-chart-bar" style="color:var(--primary-light);margin-right:6px"></i> Sigorta Türüne Göre Dağılım</h3>
           </div>
-          <table>
+          <div class="table-wrap"><table>
             <thead>
               <tr>
                 <th>Sigorta Türü</th>
-                <th>Poliçe Sayısı</th>
+                <th>Poliçe</th>
                 <th>Toplam Prim</th>
-                <th>Kazanılan Komisyon</th>
-                <th>Şirkete Ödenecek Net</th>
-                <th>Ort. Komisyon %</th>
+                <th>Komisyon</th>
+                <th>Net</th>
+                <th>Ort.%</th>
               </tr>
             </thead>
             <tbody id="fin-breakdown-tbody"></tbody>
             <tfoot id="fin-breakdown-tfoot" style="background:#f7f9fc;font-weight:700;border-top:2px solid var(--border)"></tfoot>
-          </table>
+          </table></div>
         </div>
       </div>
 
@@ -1336,21 +1360,18 @@
             Tümünü Gör <i class="fas fa-arrow-right"></i>
           </button>
         </div>
-        <table>
+        <div class="table-wrap"><table>
           <thead>
             <tr>
               <th>Müşteri</th>
-              <th>Telefon</th>
               <th>Sigorta Türü</th>
-              <th>Poliçe No</th>
-              <th>Bitiş Tarihi</th>
-              <th>Kalan Gün</th>
-              <th>Prim (₺)</th>
-              <th>İşlemler</th>
+              <th>Bitiş</th>
+              <th>Kalan</th>
+              <th>İşlem</th>
             </tr>
           </thead>
           <tbody id="dash-yaklasan-tbody"></tbody>
-        </table>
+        </table></div>
       </div>
 
       <!-- Son Eklenen Müşteriler -->
@@ -1361,19 +1382,17 @@
             Tümünü Gör <i class="fas fa-arrow-right"></i>
           </button>
         </div>
-        <table>
+        <div class="table-wrap"><table>
           <thead>
             <tr>
               <th>Müşteri</th>
-              <th>Telefon</th>
               <th>Sigorta Türü</th>
-              <th>Poliçe No</th>
-              <th>Bitiş Tarihi</th>
+              <th>Bitiş</th>
               <th>Durum</th>
             </tr>
           </thead>
           <tbody id="recent-tbody"></tbody>
-        </table>
+        </table></div>
       </div>
     </div>
   </div>
@@ -1381,7 +1400,7 @@
 
   <!-- ════ PAGE: VERESİYE ════ -->
   <div class="page" id="page-veresiye">
-    <div style="padding:28px">
+    <div class="page-bot-pad" style="padding-top:12px">
 
       <!-- Özet Kartlar -->
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
@@ -1586,16 +1605,13 @@
             <option value="Hayat">Hayat / Diğer</option>
           </select>
         </div>
-        <table>
+        <div class="table-wrap"><table>
           <thead>
             <tr>
               <th>Müşteri</th>
-              <th>Telefon</th>
               <th>Sigorta Türü</th>
-              <th>Poliçe No</th>
-              <th>Bitiş Tarihi</th>
+              <th>Bitiş</th>
               <th>Kalan Gün</th>
-              <th>Prim (₺)</th>
               <th>İşlemler</th>
             </tr>
           </thead>
@@ -1693,7 +1709,7 @@
 
   <!-- ════ PAGE: YEDEK / YÜKLE ════ -->
   <div class="page" id="page-yedek">
-    <div style="padding:28px">
+    <div class="page-bot-pad" style="padding-top:12px">
       <div class="page-header-bar">
         <div>
           <h2><i class="fas fa-database" style="color:var(--primary-light)"></i> Yedek Al / Geri Yükle</h2>
@@ -2468,7 +2484,7 @@ function renderDashboard() {
 
   const dashYBody = document.getElementById('dash-yaklasan-tbody');
   if (dashYaklasan.length === 0) {
-    dashYBody.innerHTML = `<tr><td colspan="8">
+    dashYBody.innerHTML = `<tr><td colspan="5">
       <div class="no-alert" style="padding:28px">
         <i class="fas fa-check-circle" style="font-size:28px;color:var(--success);margin-bottom:8px;display:block"></i>
         Önümüzdeki 30 gün içinde biten poliçe yok 🎉
@@ -2481,18 +2497,15 @@ function renderDashboard() {
       return `<tr style="${rowStyle}">
         <td>
           <div class="table-name">${m.adsoyad}</div>
-          <div class="table-sub">${m.kimlik_tur || 'TC'}: ${m.tc || '—'}</div>
+          <div class="table-sub">${m.telefon}</div>
         </td>
-        <td>${m.telefon}</td>
         <td>${turBadge(m.tur)}</td>
-        <td><code style="font-size:11px">${m.policeno}</code></td>
         <td style="font-weight:600">${formatDate(m.bitis)}</td>
         <td>
-          <span class="days-badge ${badgeCls}" style="display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:800">
+          <span class="days-badge ${badgeCls}" style="display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:800">
             ${d === 0 ? '⚡ Bugün!' : d + ' gün'}
           </span>
         </td>
-        <td class="prim-amount">${formatMoney(m.prim)}</td>
         <td>
           <div class="action-btns">
             <button class="icon-btn view" title="Detay" onclick="showDetail('${m.id}')"><i class="fas fa-eye"></i></button>
@@ -2507,16 +2520,14 @@ function renderDashboard() {
   const tbody = document.getElementById('recent-tbody');
   const recent = [...musteriler].slice(-6).reverse();
   if (recent.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><i class="fas fa-users"></i><h3>Henüz müşteri yok</h3><p>Yeni müşteri eklemek için butona tıklayın</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><i class="fas fa-users"></i><h3>Henüz müşteri yok</h3><p>Yeni müşteri eklemek için butona tıklayın</p></div></td></tr>';
   } else {
     tbody.innerHTML = recent.map(m => {
       const d = daysLeft(m.bitis);
       const s = getStatus(d, m.durum);
       return `<tr>
-        <td><div class="table-name">${m.adsoyad}</div><div class="table-sub">${m.tc || '-'}</div></td>
-        <td>${m.telefon}</td>
+        <td><div class="table-name">${m.adsoyad}</div><div class="table-sub">${m.telefon}</div></td>
         <td>${turBadge(m.tur)}</td>
-        <td><code>${m.policeno}</code></td>
         <td>${formatDate(m.bitis)}</td>
         <td><span class="status-badge ${s.cls}">${s.label}</span></td>
       </tr>`;
@@ -3069,18 +3080,11 @@ function renderFinancials() {
     const ortPct = r.prim > 0 ? (r.komisyon / r.prim * 100) : 0;
     return `<tr>
       <td>${turBadge(t)}</td>
-      <td style="font-weight:600">${r.count}</td>
+      <td style="font-weight:600;text-align:center">${r.count}</td>
       <td style="font-weight:700;color:var(--primary)">${formatMoney(r.prim,'TL')}</td>
       <td style="font-weight:700;color:var(--success)">${formatMoney(r.komisyon,'TL')}</td>
       <td style="font-weight:700;color:var(--danger)">${formatMoney(net,'TL')}</td>
-      <td>
-        <div style="display:flex;align-items:center;gap:8px">
-          <div style="flex:1;height:6px;background:#e8eef5;border-radius:3px;overflow:hidden">
-            <div style="height:100%;background:var(--success);border-radius:3px;width:${Math.min(ortPct,100)}%"></div>
-          </div>
-          <span style="font-size:12px;font-weight:700;color:var(--success)">%${ortPct.toFixed(1)}</span>
-        </div>
-      </td>
+      <td style="font-weight:700;color:var(--success);text-align:center">%${ortPct.toFixed(1)}</td>
     </tr>`;
   }).join('');
 
