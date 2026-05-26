@@ -850,47 +850,61 @@
   /* ── MOBİL RESPONSIVE ── */
   .hamburger-btn { display: none; }
 
+  /* ── ALT MENÜ (tüm ekranlar için sabit gizli) ── */
+  .bottom-nav {
+    display: none;
+  }
+  .more-menu-overlay { display: none; position: fixed; inset: 0; z-index: 1998; }
+  .more-menu-overlay.open { display: block; }
+  .more-menu-sheet {
+    display: none; position: fixed; bottom: -100%; left: 0; right: 0;
+    background: var(--card); border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+    padding: 12px 16px 32px; z-index: 1999;
+    transition: bottom 0.3s cubic-bezier(.4,0,.2,1);
+  }
+  .more-menu-sheet.open { display: block; bottom: 0; }
+  .more-menu-handle {
+    width: 40px; height: 4px; background: #ccc; border-radius: 4px;
+    margin: 0 auto 16px;
+  }
+  .more-menu-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+  }
+  .more-menu-item {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    padding: 14px 8px; background: var(--bg); border-radius: 12px;
+    cursor: pointer; font-size: 12px; color: var(--text);
+    transition: background 0.15s;
+  }
+  .more-menu-item:active { background: var(--primary); color: #fff; }
+  .more-menu-item i { font-size: 20px; color: var(--primary); }
+  .more-menu-item:active i { color: #fff; }
+
   @media (max-width: 768px) {
-    /* Tüm layout sıfırla */
-    body, html { overflow: hidden; height: 100%; }
-    .app { display: block !important; height: 100vh; overflow: hidden; }
-
     /* Sidebar tamamen gizle */
-    .sidebar {
-      display: block !important;
-      position: fixed !important;
-      left: -280px !important;
-      top: 0 !important;
-      height: 100vh !important;
-      width: 260px !important;
-      z-index: 1000 !important;
-      transition: left 0.3s ease !important;
-      overflow-y: auto;
-    }
-    .sidebar.open { left: 0 !important; }
-
-    /* Backdrop */
-    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; }
-    .sidebar-backdrop.open { display: block; }
+    .sidebar, .sidebar-backdrop { display: none !important; }
+    .hamburger-btn { display: none !important; }
 
     /* Ana içerik tam ekran */
+    .app { flex-direction: column; }
     .main {
-      width: 100vw !important;
-      height: 100vh !important;
-      overflow-y: auto !important;
       margin-left: 0 !important;
+      width: 100vw !important;
+      height: calc(100vh - 64px) !important;
+      overflow-y: auto !important;
+      padding-bottom: 0 !important;
     }
+    /* Sayfanın alt kısmı menünün arkasında kalmasın */
+    .page { padding-bottom: 80px !important; }
 
     /* Topbar */
-    .topbar { padding: 10px 14px !important; gap: 8px; flex-wrap: nowrap; }
+    .topbar { padding: 10px 14px !important; gap: 8px; }
     .topbar-title { font-size: 15px; }
     .topbar-subtitle { font-size: 11px; }
     .topbar-actions { flex-wrap: wrap; gap: 6px; }
     .search-box { flex: 1; min-width: 0; }
     .search-box input { width: 100%; font-size: 13px; }
-
-    /* Hamburger göster */
-    .hamburger-btn { display: flex !important; }
 
     /* Grid düzenle */
     .stats-grid {
@@ -899,21 +913,51 @@
       padding: 14px !important;
     }
 
-    /* Finansal kartlar: tek kolon */
-    .fin-grid-3 { grid-template-columns: 1fr !important; }
+    /* ── ALT MENÜ ── */
+    .bottom-nav {
+      display: flex !important;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 64px;
+      background: var(--card);
+      border-top: 1px solid rgba(0,0,0,0.08);
+      box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+      z-index: 1000;
+      align-items: stretch;
+    }
+    .bn-item {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 10px;
+      color: #aaa;
+      cursor: pointer;
+      transition: color 0.15s;
+      padding: 6px 4px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .bn-item i { font-size: 20px; }
+    .bn-item span { font-size: 10px; font-weight: 500; }
+    .bn-item.active { color: var(--primary); }
+    .bn-item.active i { transform: scale(1.1); }
+    .bn-badge {
+      position: absolute;
+      top: -4px; right: -8px;
+      background: #e53935; color: #fff;
+      font-size: 9px; font-weight: 700;
+      min-width: 16px; height: 16px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 3px;
+    }
+    .bn-badge[data-count="0"], .bn-badge:empty { display: none; }
 
-    /* Padding azalt */
-    .main-inner { padding: 0 12px 16px !important; }
-
-    /* Tablo scroll */
-    .card { overflow-x: auto; }
-    table { min-width: 500px; font-size: 12px; }
-
-    /* Modal */
-    .modal { width: 96% !important; max-width: 96% !important; max-height: 90vh; overflow-y: auto; }
-
-    /* Ver cards */
-    .ver-tutarlar { flex-wrap: wrap; gap: 8px; }
+    /* İçerik padding düzenle */
+    .page { padding-bottom: 16px; }
+    .stats-grid { padding-bottom: 10px !important; }
   }
 
 </style>
@@ -2187,10 +2231,54 @@ function closeSidebar() {
   if (backdrop) backdrop.classList.remove('open');
 }
 
+function setBottomNav(activeId) {
+  document.querySelectorAll('.bn-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById(activeId);
+  if (el) el.classList.add('active');
+}
+
+function toggleMoreMenu() {
+  const sheet   = document.getElementById('more-menu-sheet');
+  const overlay = document.getElementById('more-menu-overlay');
+  if (!sheet) return;
+  sheet.classList.toggle('open');
+  overlay.classList.toggle('open');
+}
+
+function closeMoreMenu() {
+  const sheet   = document.getElementById('more-menu-sheet');
+  const overlay = document.getElementById('more-menu-overlay');
+  if (sheet)   sheet.classList.remove('open');
+  if (overlay) overlay.classList.remove('open');
+}
+
+function updateBottomNavBadges() {
+  // Yaklaşan badge
+  const now = new Date();
+  const in30 = new Date(now.getTime() + 30 * 24 * 3600 * 1000);
+  const cnt = musteriler.filter(m => {
+    if (!m.bitis || m.iptal) return false;
+    const d = new Date(m.bitis);
+    return d >= now && d <= in30;
+  }).length;
+  const b1 = document.getElementById('bn-badge-yaklasan');
+  if (b1) { b1.textContent = cnt > 0 ? cnt : ''; b1.dataset.count = cnt; }
+  // Veresiye badge
+  const borclu = (veresiyeler || []).filter(v => {
+    const kalan = (v.tutar||0) - (v.odenenTutar||0);
+    return kalan > 0;
+  }).length;
+  const b2 = document.getElementById('bn-badge-veresiye');
+  if (b2) { b2.textContent = borclu > 0 ? borclu : ''; b2.dataset.count = borclu; }
+}
+
 // ─── NAVIGATION ─────────────────────────────────────────────────────────────
 
 function showPage(name, el) {
   if (window.innerWidth <= 768) closeSidebar();
+  // Alt menü aktif state güncelle
+  const bnMap = { dashboard:'bn-dashboard', musteriler:'bn-musteriler', yaklasan:'bn-yaklasan', veresiye:'bn-veresiye', rapor:'bn-diger', yedek:'bn-diger' };
+  if (bnMap[name]) setBottomNav(bnMap[name]);
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
@@ -2214,6 +2302,7 @@ function showPage(name, el) {
 
 function filterByType(tur) {
   if (window.innerWidth <= 768) closeSidebar();
+  setBottomNav('bn-musteriler');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.getElementById('page-musteriler').classList.add('active');
@@ -4105,6 +4194,7 @@ function updateNavBadges() {
   const acikVer = veresiyeler.filter(v => v.durum !== 'odendi').length;
   const vbadge = document.getElementById('badge-veresiye');
   if (vbadge) { vbadge.textContent = acikVer; vbadge.style.display = acikVer ? 'inline-flex' : 'none'; }
+  updateBottomNavBadges();
 }
 
 
@@ -4136,5 +4226,68 @@ setInterval(() => {
         .catch(e => console.warn('SW hatası:', e));
     }
   </script>
+
+<!-- MOBİL ALT MENÜ -->
+<nav class="bottom-nav" id="bottom-nav">
+  <div class="bn-item active" id="bn-dashboard" onclick="showPage('dashboard', this); setBottomNav('bn-dashboard')">
+    <i class="fas fa-chart-pie"></i>
+    <span>Ana Sayfa</span>
+  </div>
+  <div class="bn-item" id="bn-musteriler" onclick="showPage('musteriler', this); setBottomNav('bn-musteriler')">
+    <i class="fas fa-users"></i>
+    <span>Müşteriler</span>
+  </div>
+  <div class="bn-item" id="bn-yaklasan" onclick="showPage('yaklasan', this); setBottomNav('bn-yaklasan')">
+    <div style="position:relative;display:inline-block">
+      <i class="fas fa-bell"></i>
+      <span class="bn-badge" id="bn-badge-yaklasan">0</span>
+    </div>
+    <span>Yaklaşan</span>
+  </div>
+  <div class="bn-item" id="bn-veresiye" onclick="showPage('veresiye', this); setBottomNav('bn-veresiye')">
+    <div style="position:relative;display:inline-block">
+      <i class="fas fa-hand-holding-usd"></i>
+      <span class="bn-badge" id="bn-badge-veresiye">0</span>
+    </div>
+    <span>Veresiye</span>
+  </div>
+  <div class="bn-item" id="bn-diger" onclick="toggleMoreMenu()">
+    <i class="fas fa-ellipsis-h"></i>
+    <span>Diğer</span>
+  </div>
+</nav>
+
+<!-- MOBİL DAHA FAZLA MENÜSÜ -->
+<div class="more-menu-overlay" id="more-menu-overlay" onclick="closeMoreMenu()"></div>
+<div class="more-menu-sheet" id="more-menu-sheet">
+  <div class="more-menu-handle"></div>
+  <div class="more-menu-grid">
+    <div class="more-menu-item" onclick="showPage('rapor', null); setBottomNav('bn-diger'); closeMoreMenu()">
+      <i class="fas fa-chart-line"></i>
+      <span>Aylık Rapor</span>
+    </div>
+    <div class="more-menu-item" onclick="showPage('yedek', null); setBottomNav('bn-diger'); closeMoreMenu()">
+      <i class="fas fa-database"></i>
+      <span>Yedek / Yükle</span>
+    </div>
+    <div class="more-menu-item" onclick="filterByType('Araç'); closeMoreMenu()">
+      <i class="fas fa-car"></i>
+      <span>Araç / Kasko</span>
+    </div>
+    <div class="more-menu-item" onclick="filterByType('Sağlık'); closeMoreMenu()">
+      <i class="fas fa-heartbeat"></i>
+      <span>Sağlık</span>
+    </div>
+    <div class="more-menu-item" onclick="filterByType('Konut'); closeMoreMenu()">
+      <i class="fas fa-home"></i>
+      <span>Konut / DASK</span>
+    </div>
+    <div class="more-menu-item" onclick="filterByType('Hayat'); closeMoreMenu()">
+      <i class="fas fa-hand-holding-heart"></i>
+      <span>Hayat / Diğer</span>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
