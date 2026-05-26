@@ -857,6 +857,7 @@
 
 
   .page-top-pad { padding: 28px 28px 0; }
+  .page-rapor-wrap { padding: 28px; }
   .page-bot-pad { padding: 0 28px 28px; }
 
   @media (max-width: 768px) {
@@ -942,6 +943,19 @@
 
     /* YAKLAŞAN TABLO */
     .yaklasan-wrap { overflow-x: scroll !important; }
+  
+    /* RAPOR SAYFASI */
+    .page-rapor-wrap { padding: 10px !important; }
+    .rapor-year-bar { flex-wrap: wrap !important; gap: 8px !important; }
+    .export-btn-group { display: flex !important; gap: 6px !important; flex-wrap: wrap !important; }
+    .export-btn-group .btn { padding: 7px 10px !important; font-size: 11px !important; }
+    .card-header { padding: 10px 12px !important; }
+    .card-header h3 { font-size: 13px !important; }
+
+    /* GİRİŞ EKRANI MOBİL */
+    .login-box { padding: 28px 20px !important; }
+    .login-title { font-size: 19px !important; }
+
   }
 
 </style>
@@ -959,6 +973,26 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
+
+<!-- GİRİŞ EKRANI -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🛡️</div>
+    <div class="login-title">YILMAZ SİGORTA</div>
+    <div class="login-sub">Müşteri Takip Sistemi</div>
+    <div class="login-field">
+      <label>Kullanıcı Adı</label>
+      <input type="text" id="login-user" placeholder="kullanıcı adı" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-field">
+      <label>Şifre</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="login-btn" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Giriş Yap</button>
+    <div class="login-error" id="login-error">Kullanıcı adı veya şifre hatalı!</div>
+  </div>
+</div>
+
 
 <!-- ════════════════════════════════════════════
      SIDEBAR
@@ -1504,7 +1538,7 @@
 
   <!-- ════ PAGE: AYLIK RAPOR ════ -->
   <div class="page" id="page-rapor">
-    <div style="padding:28px">
+    <div class="page-rapor-wrap">
 
       <div class="rapor-year-bar">
         <button class="year-btn" onclick="changeYear(-1)"><i class="fas fa-chevron-left"></i></button>
@@ -1535,16 +1569,16 @@
           </h3>
           <span style="font-size:12px;color:var(--text-light)">Bir aya tıklayarak detay görüntüleyin</span>
         </div>
-        <table>
+        <div class="table-wrap"><table>
           <thead>
             <tr>
-              <th>Ay</th><th>Poliçe Sayısı</th><th>Toplam Prim (₺)</th>
-              <th>Komisyon (₺)</th><th>Şirkete Net (₺)</th><th>Ort. %</th><th>Dağılım</th>
+              <th>Ay</th><th>Poliçe</th><th>Toplam Prim (₺)</th>
+              <th>Komisyon (₺)</th><th>Net (₺)</th><th>%</th>
             </tr>
           </thead>
           <tbody id="rapor-tbody"></tbody>
           <tfoot id="rapor-tfoot" style="background:#f7f9fc;font-weight:700;border-top:2px solid var(--border)"></tfoot>
-        </table>
+        </table></div>
       </div>
 
       <!-- £ STG — KASKO Tablosu -->
@@ -1555,16 +1589,16 @@
           </h3>
           <span style="font-size:12px;color:var(--text-light)">Bir aya tıklayarak detay görüntüleyin</span>
         </div>
-        <table>
+        <div class="table-wrap"><table>
           <thead>
             <tr>
-              <th>Ay</th><th>Poliçe Sayısı</th><th>Toplam Prim (£)</th>
-              <th>Komisyon (£)</th><th>Şirkete Net (£)</th><th>Ort. %</th><th>Dağılım</th>
+              <th>Ay</th><th>Poliçe</th><th>Toplam Prim (£)</th>
+              <th>Komisyon (£)</th><th>Net (£)</th><th>%</th>
             </tr>
           </thead>
           <tbody id="rapor-stg-tbody"></tbody>
           <tfoot id="rapor-stg-tfoot" style="background:#fff8f0;font-weight:700;border-top:2px solid var(--border)"></tfoot>
-        </table>
+        </table></div>
       </div>
 
       <!-- Detay Paneli (ay seçilince açılır) -->
@@ -1575,14 +1609,13 @@
             <i class="fas fa-times"></i> Kapat
           </button>
         </div>
-        <table>
+        <div class="table-wrap"><table>
           <thead><tr style="background:#f7f9fc">
-            <th>Müşteri</th><th>Tür</th><th>Para Birimi</th>
-            <th>Poliçe No</th><th>Başlangıç</th><th>Bitiş</th>
-            <th>Prim</th><th>Komisyon</th><th>Net Tutar</th>
+            <th>Müşteri</th><th>Tür</th><th>Poliçe No</th>
+            <th>Bitiş</th><th>Prim</th><th>Komisyon</th><th>Net</th>
           </tr></thead>
           <tbody id="month-detail-tbody"></tbody>
-        </table>
+        </table></div>
       </div>
 
     </div>
@@ -2003,6 +2036,7 @@ try {
 document.addEventListener('DOMContentLoaded', () => {
   const t = document.getElementById('page-title');
   if (t) t.textContent = CONFIG.firma_adi + ' - Takip Sistemi';
+  checkLogin();
 });
 
 // ─── DATA ───────────────────────────────────────────────────────────────────
@@ -3204,7 +3238,6 @@ function renderAyTable(ayData, tbodyId, tfootId, cur, selKey) {
       <td style="font-weight:${a.komisyon>0?'700':'400'};color:${a.komisyon>0?'var(--success)':'var(--text-light)'}">${a.komisyon > 0 ? formatMoney(a.komisyon,cur) : '—'}</td>
       <td style="font-weight:${a.net>0?'700':'400'};color:${a.net>0?'var(--danger)':'var(--text-light)'}">${a.net > 0 ? formatMoney(a.net,cur) : '—'}</td>
       <td>${a.prim > 0 ? `<span style="font-weight:700;color:var(--success)">%${ort.toFixed(1)}</span>` : '—'}</td>
-      <td><div class="bar-cell"><div class="bar-fill" style="width:${barPct}%;max-width:120px;background:${cur==='STG'?'#e65100':'var(--success)'}"></div></div></td>
     </tr>`;
   }).join('');
 
@@ -3216,7 +3249,6 @@ function renderAyTable(ayData, tbodyId, tfootId, cur, selKey) {
     <td style="padding:12px 16px;color:var(--success)">${formatMoney(yKom,cur)}</td>
     <td style="padding:12px 16px;color:var(--danger)">${formatMoney(yPrim-yKom,cur)}</td>
     <td style="padding:12px 16px;color:var(--success)">%${ortYil.toFixed(1)}</td>
-    <td></td>
   </tr>`;
 
   return { yPrim, yKom, yCount };
@@ -3294,7 +3326,7 @@ function selectMonth(idx, cur) {
 
   const tbody = document.getElementById('month-detail-tbody');
   if (liste.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Bu ay kayıt yok</h3></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Bu ay kayıt yok</h3></div></td></tr>`;
   } else {
     tbody.innerHTML = liste.map(m => {
       const cur2 = currencyOf(m);
@@ -3306,12 +3338,10 @@ function selectMonth(idx, cur) {
       return `<tr>
         <td><div class="table-name">${m.adsoyad}</div></td>
         <td>${turBadge(m.alttur || m.tur)}</td>
-        <td>${badge}</td>
-        <td><code style="font-size:11px">${m.policeno || m.notlar || '—'}</code></td>
-        <td>${formatDate(m.baslangic)}</td>
+        <td><code style="font-size:11px">${m.policeno || '—'}</code></td>
         <td>${formatDate(m.bitis)}</td>
         <td class="prim-amount">${formatMoney(p, cur2)}</td>
-        <td style="color:var(--success);font-weight:700">${k > 0 ? formatMoney(kom,cur2) + ` (%${k})` : '—'}</td>
+        <td style="color:var(--success);font-weight:700">${k > 0 ? formatMoney(kom,cur2) : '—'}</td>
         <td style="color:var(--danger);font-weight:700">${p > 0 ? formatMoney(net,cur2) : '—'}</td>
       </tr>`;
     }).join('');
@@ -4208,7 +4238,37 @@ setInterval(() => {
         .then(() => console.log('SW kayıtlı'))
         .catch(e => console.warn('SW hatası:', e));
     }
-  </script>
+  
+
+// ── GİRİŞ SİSTEMİ ──────────────────────────────────────────────────────────
+const LOGIN_USER = 'ylmzcnyt';
+const LOGIN_PASS = 'yilmaz1905';
+const SESSION_KEY = 'sigorta_auth_v1';
+
+function checkLogin() {
+  const auth = sessionStorage.getItem(SESSION_KEY);
+  if (auth === 'ok') {
+    document.getElementById('login-screen').classList.add('hidden');
+  }
+}
+
+function doLogin() {
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  const err = document.getElementById('login-error');
+  if (u === LOGIN_USER && p === LOGIN_PASS) {
+    sessionStorage.setItem(SESSION_KEY, 'ok');
+    document.getElementById('login-screen').classList.add('hidden');
+    err.classList.remove('show');
+  } else {
+    err.classList.add('show');
+    document.getElementById('login-pass').value = '';
+    document.getElementById('login-pass').focus();
+  }
+}
+
+
+</script>
 
 <!-- MOBİL ALT MENÜ -->
 <nav class="bottom-nav" id="bottom-nav">
