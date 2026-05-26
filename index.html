@@ -958,6 +958,69 @@
 
   }
 
+
+  /* ════ GİRİŞ EKRANI ════ */
+  #login-screen {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 99999;
+    background: linear-gradient(135deg, #1e3a5f 0%, #0f2040 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #login-screen.hidden { display: none !important; }
+  .login-box {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 36px 32px;
+    width: 320px;
+    max-width: calc(100vw - 32px);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+    text-align: center;
+  }
+  .login-logo { font-size: 48px; margin-bottom: 8px; }
+  .login-title {
+    font-size: 20px; font-weight: 800;
+    color: #1e3a5f; margin-bottom: 4px;
+  }
+  .login-sub {
+    font-size: 12px; color: #888;
+    margin-bottom: 24px;
+  }
+  .login-field { margin-bottom: 14px; text-align: left; }
+  .login-field label {
+    font-size: 11px; font-weight: 700;
+    color: #555; display: block;
+    margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .login-field input {
+    width: 100%; padding: 12px 14px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px; outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: border-color 0.2s;
+  }
+  .login-field input:focus { border-color: #1e3a5f; }
+  .login-btn {
+    width: 100%; padding: 14px;
+    background: #1e3a5f; color: #fff;
+    border: none; border-radius: 10px;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer; margin-top: 8px;
+    transition: background 0.2s;
+    font-family: inherit;
+  }
+  .login-btn:active { background: #152d4a; }
+  .login-error {
+    color: #e53935; font-size: 13px;
+    margin-top: 12px; font-weight: 600;
+    display: none;
+  }
+  .login-error.show { display: block; }
+
 </style>
 
   <!-- PWA Manifest -->
@@ -973,23 +1036,30 @@
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 <body>
-
-<!-- GİRİŞ EKRANI -->
+<!-- ════ GİRİŞ EKRANI ════ -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">🛡️</div>
     <div class="login-title">YILMAZ SİGORTA</div>
-    <div class="login-sub">Müşteri Takip Sistemi</div>
+    <div class="login-sub">Müşteri Takip Sistemi · KKTC</div>
     <div class="login-field">
       <label>Kullanıcı Adı</label>
-      <input type="text" id="login-user" placeholder="kullanıcı adı" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="text" id="login-user" placeholder="kullanıcı adı"
+             autocomplete="username"
+             onkeydown="if(event.key==='Enter')doLogin()">
     </div>
     <div class="login-field">
       <label>Şifre</label>
-      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <input type="password" id="login-pass" placeholder="••••••••"
+             autocomplete="current-password"
+             onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button class="login-btn" onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Giriş Yap</button>
-    <div class="login-error" id="login-error">Kullanıcı adı veya şifre hatalı!</div>
+    <button class="login-btn" onclick="doLogin()">
+      Giriş Yap
+    </button>
+    <div class="login-error" id="login-error">
+      Kullanıcı adı veya şifre hatalı!
+    </div>
   </div>
 </div>
 

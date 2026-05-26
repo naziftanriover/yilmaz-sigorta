@@ -1,4 +1,4 @@
-const CACHE_NAME = 'sigorta-v8';
+const CACHE_NAME = 'sigorta-v9';
 const ASSETS = [
   './index.html',
   './manifest.json'
