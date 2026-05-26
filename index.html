@@ -2166,6 +2166,27 @@ function turBadge(tur) {
   return `<span class="type-badge" style="background:${t.color};color:${t.text}">${t.icon} ${tur}</span>`;
 }
 
+// ─── MOBİL MENÜ ─────────────────────────────────────────────────────────────
+
+function toggleSidebar() {
+  const sidebar  = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (sidebar.classList.contains('open')) {
+    sidebar.classList.remove('open');
+    backdrop.classList.remove('open');
+  } else {
+    sidebar.classList.add('open');
+    backdrop.classList.add('open');
+  }
+}
+
+function closeSidebar() {
+  const sidebar  = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (sidebar) sidebar.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('open');
+}
+
 // ─── NAVIGATION ─────────────────────────────────────────────────────────────
 
 function showPage(name, el) {
