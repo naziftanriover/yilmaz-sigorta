@@ -2311,6 +2311,11 @@ function load() {
 function save() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(musteriler));
   localStorage.setItem('sigorta_veresiye_v1', JSON.stringify(veresiyeler));
+  // Firebase'e de kaydet
+  if (firebaseReady && db) {
+    db.ref('/').set({ musteriler: musteriler, veresiyeler: veresiyeler })
+      .catch(e => console.warn('Firebase kayıt hatası:', e));
+  }
 }
 
 function addDays(date, n) {
