@@ -1254,6 +1254,13 @@
           <p>15 Günde Biten (Acil)</p>
         </div>
       </div>
+      <div class="stat-card" onclick="showComboFilter()" style="cursor:pointer;border-left:4px solid #2e7d32" title="Tıkla: Çift poliçeli müşterileri listele">
+        <div class="stat-icon green"><i class="fas fa-link"></i></div>
+        <div class="stat-info">
+          <h3 id="stat-combo">0</h3>
+          <p>Çift Poliçeli Müşteri</p>
+        </div>
+      </div>
     </div>
 
     <div class="main-inner" style="padding: 0 28px 28px;">
@@ -1600,6 +1607,7 @@
             <option value="danger">Acil (15 gün)</option>
             <option value="expired">Süresi Dolmuş</option>
             <option value="iptal">İptal Edilenler</option>
+            <option value="combo">🔗 Çift Poliçe (Kasko + Zorunlu)</option>
           </select>
           <button class="btn btn-secondary" onclick="clearFilters()"><i class="fas fa-times"></i> Temizle</button>
         </div>
@@ -2502,6 +2510,9 @@ function renderDashboard() {
   document.getElementById('stat-active').textContent = active.length;
   document.getElementById('stat-30').textContent     = exp30.length + exp15.length;
   document.getElementById('stat-15').textContent     = exp15.length;
+  const comboCount = getComboSet().size;
+  const statCombo = document.getElementById('stat-combo');
+  if (statCombo) statCombo.textContent = comboCount;
 
   // Badge
   const badgeCount = exp15.length + exp30.length;
@@ -2613,10 +2624,27 @@ function trLower(s) {
                   .replace(/Ç/g,'ç').toLowerCase();
 }
 
+// ─── ÇİFT POLİÇE TESPİT ─────────────────────────────────────────────────────
+// Hem Kasko hem Zorunlu Trafik poliçesi olan müşteri isimlerini döndürür
+function getComboSet() {
+  const kaskoNames = new Set(
+    musteriler
+      .filter(m => m.alttur === 'Kasko' && m.durum !== 'iptal')
+      .map(m => m.adsoyad.trim().toLocaleLowerCase('tr-TR'))
+  );
+  const zorunluNames = new Set(
+    musteriler
+      .filter(m => m.alttur === 'Zorunlu Trafik' && m.durum !== 'iptal')
+      .map(m => m.adsoyad.trim().toLocaleLowerCase('tr-TR'))
+  );
+  return new Set([...kaskoNames].filter(n => zorunluNames.has(n)));
+}
+
 function getFiltered() {
   const q   = trLower((document.getElementById('table-search')?.value || document.getElementById('global-search')?.value || '').trim());
   const tur = document.getElementById('filter-type')?.value || '';
   const st  = document.getElementById('filter-status')?.value || '';
+  const comboSet = (st === 'combo') ? getComboSet() : null;
 
   return musteriler.filter(m => {
     const matchQ = !q || (
@@ -2625,7 +2653,8 @@ function getFiltered() {
       (m.telefon || '').includes(q) ||
       trLower(m.policeno).includes(q) ||
       trLower(m.sirket).includes(q) ||
-      trLower(m.notlar).includes(q)
+      trLower(m.notlar).includes(q) ||
+      trLower(m.plaka || '').includes(q)
     );
     const matchT = !tur || m.tur === tur;
     const d = daysLeft(m.bitis);
@@ -2635,6 +2664,7 @@ function getFiltered() {
     if (st === 'danger')   matchS = m.durum !== 'iptal' && d >= 0 && d <= 15;
     if (st === 'expired')  matchS = m.durum !== 'iptal' && d < 0;
     if (st === 'iptal')    matchS = m.durum === 'iptal';
+    if (st === 'combo')    matchS = comboSet.has(m.adsoyad.trim().toLocaleLowerCase('tr-TR'));
     return matchQ && matchT && matchS;
   });
 }
@@ -2658,19 +2688,21 @@ function renderTable() {
         <p>Arama kriterlerinizi değiştirerek tekrar deneyin</p>
       </div></td></tr>`;
   } else {
+    const comboSet = getComboSet();
     tbody.innerHTML = slice.map((m, i) => {
       const d       = daysLeft(m.bitis);
       const s       = getStatus(d, m.durum);
       const rowNum  = (currentPage-1)*PER_PAGE + i + 1;
       const cur     = currencyOf(m);
       const iptal   = m.durum === 'iptal';
+      const isCombo = comboSet.has(m.adsoyad.trim().toLocaleLowerCase('tr-TR'));
       const curBadge= cur === 'STG'
         ? `<span class="cur-badge-stg">£ STG</span>`
         : `<span class="cur-badge-tl">₺ TL</span>`;
       return `<tr class="${iptal ? 'row-iptal' : ''}">
         <td style="color:var(--text-light);font-size:12px">${rowNum}</td>
         <td>
-          <div class="table-name">${m.adsoyad}</div>
+          <div class="table-name">${m.adsoyad}${isCombo ? ' <span title="Hem Kasko hem Zorunlu Trafik kaydı var" style="background:#e8f5e9;color:#2e7d32;border-radius:6px;padding:1px 6px;font-size:10px;font-weight:700;border:1px solid #a5d6a7;vertical-align:middle">🔗 ÇİFT</span>' : ''}</div>
           <div class="table-sub">${m.kimlik_tur ? `<span style="font-size:10px;font-weight:700;color:var(--text-light)">${m.kimlik_tur === 'TC' ? '🇹🇷' : m.kimlik_tur === 'KKTC' ? '🇨🇾' : '🌍'} ${m.kimlik_tur}:</span> ` : ''}${m.tc || ''}</div>
           ${m.plaka ? `<div class="table-sub" style="color:#e65100;font-weight:600">🚗 ${m.plaka}</div>` : ''}
         </td>
@@ -2716,6 +2748,18 @@ function clearFilters() {
   document.getElementById('table-search').value = '';
   document.getElementById('filter-type').value  = '';
   document.getElementById('filter-status').value = '';
+  currentPage = 1;
+  renderTable();
+}
+
+function showComboFilter() {
+  // Dashboard'dan "Çift Poliçeli" kartına tıklayınca müşteri listesine gidip filtreyi uygular
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-musteriler').classList.add('active');
+  document.getElementById('filter-type').value  = '';
+  document.getElementById('filter-status').value = 'combo';
+  document.getElementById('table-search').value = '';
   currentPage = 1;
   renderTable();
 }
