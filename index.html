@@ -1682,11 +1682,9 @@
         <button class="year-btn" onclick="changeYear(-1)"><i class="fas fa-chevron-left"></i></button>
         <div class="year-display" id="rapor-year">2026</div>
         <button class="year-btn" onclick="changeYear(1)"><i class="fas fa-chevron-right"></i></button>
-        <h2 style="color:var(--text-light);font-weight:400;font-size:15px">yılı aylık özet</h2>
+        <span style="color:var(--text-light);font-size:14px">yılı — aya tıkla detay gör</span>
+        <div style="flex:1"></div>
         <div class="export-btn-group">
-          <button class="btn btn-secondary" onclick="printRapor()">
-            <i class="fas fa-print"></i> Yazdır
-          </button>
           <button class="btn btn-secondary" style="color:#27ae60;border-color:#27ae60" onclick="exportRaporExcel()">
             <i class="fas fa-file-excel"></i> Excel
           </button>
@@ -1696,64 +1694,30 @@
         </div>
       </div>
 
-      <!-- Yıllık Özet Kartları -->
-      <div id="rapor-yillik-cards" style="margin-bottom:22px"></div>
+      <!-- Yıllık Özet -->
+      <div id="rapor-yillik-cards" style="margin-bottom:20px"></div>
 
-      <!-- ₺ TL — SİGORTA Tablosu -->
-      <div class="card" id="rapor-main-card" style="margin-bottom:20px">
-        <div class="card-header" style="background:linear-gradient(135deg,#e8f0fe,#f0f4ff)">
-          <h3><span style="background:#1a73e8;color:#fff;padding:3px 10px;border-radius:8px;font-size:12px;margin-right:8px">₺ TL</span>
-            SİGORTA / Zorunlu Trafik — <span id="rapor-year-label">2026</span>
-          </h3>
-          <span style="font-size:12px;color:var(--text-light)">Bir aya tıklayarak detay görüntüleyin</span>
-        </div>
-        <div class="table-wrap"><table>
-          <thead>
-            <tr>
-              <th>Ay</th><th>Poliçe</th><th>Toplam Prim (₺)</th>
-              <th>Komisyon (₺)</th><th>Net (₺)</th><th>%</th>
-            </tr>
-          </thead>
-          <tbody id="rapor-tbody"></tbody>
-          <tfoot id="rapor-tfoot" style="background:#f7f9fc;font-weight:700;border-top:2px solid var(--border)"></tfoot>
-        </table></div>
-      </div>
+      <!-- 12 Ay Grid -->
+      <div id="rapor-month-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px"></div>
 
-      <!-- £ STG — KASKO Tablosu -->
-      <div class="card" style="margin-bottom:20px">
-        <div class="card-header" style="background:linear-gradient(135deg,#fff3e0,#fff8f0)">
-          <h3><span style="background:#e65100;color:#fff;padding:3px 10px;border-radius:8px;font-size:12px;margin-right:8px">£ STG</span>
-            KASKO — <span id="rapor-stg-year-label">2026</span>
-          </h3>
-          <span style="font-size:12px;color:var(--text-light)">Bir aya tıklayarak detay görüntüleyin</span>
+      <!-- Detay Paneli -->
+      <div id="month-detail-panel" style="display:none;margin-bottom:20px">
+        <div class="card">
+          <div class="card-header" style="background:linear-gradient(135deg,#e8f0fe,#f0f4ff)">
+            <h3 id="month-detail-title">Ay Detayı</h3>
+            <button class="btn btn-secondary" style="font-size:12px" onclick="closeMonthDetail()">
+              <i class="fas fa-times"></i> Kapat
+            </button>
+          </div>
+          <div id="month-detail-summary" style="display:flex;gap:12px;padding:12px 16px;background:#f7f9fc;flex-wrap:wrap;border-bottom:1px solid var(--border)"></div>
+          <div class="table-wrap"><table>
+            <thead><tr>
+              <th>Müşteri</th><th>Tür</th><th>Poliçe No</th>
+              <th>Başlangıç</th><th>Bitiş</th><th>Prim</th><th>Komisyon</th>
+            </tr></thead>
+            <tbody id="month-detail-tbody"></tbody>
+          </table></div>
         </div>
-        <div class="table-wrap"><table>
-          <thead>
-            <tr>
-              <th>Ay</th><th>Poliçe</th><th>Toplam Prim (£)</th>
-              <th>Komisyon (£)</th><th>Net (£)</th><th>%</th>
-            </tr>
-          </thead>
-          <tbody id="rapor-stg-tbody"></tbody>
-          <tfoot id="rapor-stg-tfoot" style="background:#fff8f0;font-weight:700;border-top:2px solid var(--border)"></tfoot>
-        </table></div>
-      </div>
-
-      <!-- Detay Paneli (ay seçilince açılır) -->
-      <div class="month-detail-panel" id="month-detail-panel" style="display:none;margin-top:20px">
-        <div class="month-detail-header">
-          <h3 id="month-detail-title">— Ayı Poliçeleri</h3>
-          <button class="btn" style="background:rgba(255,255,255,0.15);color:#fff;font-size:12px;padding:6px 14px" onclick="closeMonthDetail()">
-            <i class="fas fa-times"></i> Kapat
-          </button>
-        </div>
-        <div class="table-wrap"><table>
-          <thead><tr style="background:#f7f9fc">
-            <th>Müşteri</th><th>Tür</th><th>Poliçe No</th>
-            <th>Bitiş</th><th>Prim</th><th>Komisyon</th><th>Net</th>
-          </tr></thead>
-          <tbody id="month-detail-tbody"></tbody>
-        </table></div>
       </div>
 
     </div>
@@ -3323,174 +3287,170 @@ let selectedMonth = null;
 
 function changeYear(delta) {
   raporYear += delta;
-  document.getElementById('rapor-year').textContent      = raporYear;
-  document.getElementById('rapor-year-label').textContent = raporYear;
+  document.getElementById('rapor-year').textContent = raporYear;
   selectedMonth = null;
   document.getElementById('month-detail-panel').style.display = 'none';
   renderRapor();
 }
 
-function buildAyData(cur) {
-  return AYLAR.map((ad, idx) => {
-    const ay = idx + 1;
-    const policyList = musteriler.filter(m => {
-      if (m.durum === 'iptal') return false;
-      // Kayıt tarihine göre filtrele (yoksa başlangıç tarihini kullan)
-      const tarihStr = m.kayit_tarihi || m.baslangic;
-      const tarih = new Date(tarihStr);
-      return tarih.getFullYear() === raporYear && (tarih.getMonth() + 1) === ay
-          && currencyOf(m) === cur;
-    });
-    let prim = 0, komisyon = 0;
-    policyList.forEach(m => {
-      const p = parseFloat(m.prim) || 0;
-      const k = parseFloat(m.komisyon) || 0;
-      prim     += p;
-      komisyon += p * k / 100;
-    });
-    return { ad, idx, ay, policyList, count: policyList.length, prim, komisyon, net: prim - komisyon };
+function getRaporKayitlari(ay) {
+  return musteriler.filter(m => {
+    if (m.durum === 'iptal') return false;
+    const tarihStr = m.kayit_tarihi || m.baslangic;
+    if (!tarihStr) return false;
+    const tarih = new Date(tarihStr);
+    if (isNaN(tarih.getTime())) return false;
+    if (ay === null) return tarih.getFullYear() === raporYear;
+    return tarih.getFullYear() === raporYear && (tarih.getMonth() + 1) === ay;
   });
 }
 
-function renderAyTable(ayData, tbodyId, tfootId, cur, selKey) {
-  const maxPrim = Math.max(...ayData.map(a => a.prim), 1);
-  let yPrim = 0, yKom = 0, yCount = 0;
-  ayData.forEach(a => { yPrim += a.prim; yKom += a.komisyon; yCount += a.count; });
-
-  const tbody = document.getElementById(tbodyId);
-  tbody.innerHTML = ayData.map(a => {
-    const ort    = a.prim > 0 ? (a.komisyon / a.prim * 100) : 0;
-    const barPct = (a.prim / maxPrim * 100).toFixed(1);
-    const isSel  = selectedMonth === a.idx && selectedCur === cur;
-    const rowBg  = isSel ? (cur==='STG'?'background:#fff3e0;':'background:#e8f0fe;') : a.count === 0 ? 'opacity:0.45;' : '';
-    return `<tr class="month-row ${isSel ? 'selected' : ''}" style="${rowBg}" onclick="selectMonth(${a.idx},'${cur}')">
-      <td style="font-weight:700">${a.ad}</td>
-      <td style="text-align:center">
-        ${a.count > 0
-          ? `<span style="background:${cur==='STG'?'#e65100':'var(--primary)'};color:#fff;padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700">${a.count}</span>`
-          : '<span style="color:var(--text-light)">—</span>'}
-      </td>
-      <td style="font-weight:${a.prim>0?'700':'400'};color:${a.prim>0?'var(--primary)':'var(--text-light)'}">${a.prim > 0 ? formatMoney(a.prim,cur) : '—'}</td>
-      <td style="font-weight:${a.komisyon>0?'700':'400'};color:${a.komisyon>0?'var(--success)':'var(--text-light)'}">${a.komisyon > 0 ? formatMoney(a.komisyon,cur) : '—'}</td>
-      <td style="font-weight:${a.net>0?'700':'400'};color:${a.net>0?'var(--danger)':'var(--text-light)'}">${a.net > 0 ? formatMoney(a.net,cur) : '—'}</td>
-      <td>${a.prim > 0 ? `<span style="font-weight:700;color:var(--success)">%${ort.toFixed(1)}</span>` : '—'}</td>
-    </tr>`;
-  }).join('');
-
-  const ortYil = yPrim > 0 ? (yKom / yPrim * 100) : 0;
-  document.getElementById(tfootId).innerHTML = `<tr>
-    <td style="padding:12px 16px">YILLIK TOPLAM</td>
-    <td style="padding:12px 16px;text-align:center">${yCount}</td>
-    <td style="padding:12px 16px;color:var(--primary)">${formatMoney(yPrim,cur)}</td>
-    <td style="padding:12px 16px;color:var(--success)">${formatMoney(yKom,cur)}</td>
-    <td style="padding:12px 16px;color:var(--danger)">${formatMoney(yPrim-yKom,cur)}</td>
-    <td style="padding:12px 16px;color:var(--success)">%${ortYil.toFixed(1)}</td>
-  </tr>`;
-
-  return { yPrim, yKom, yCount };
-}
-
 function renderRapor() {
-  document.getElementById('rapor-year').textContent        = raporYear;
-  document.getElementById('rapor-year-label').textContent  = raporYear;
-  document.getElementById('rapor-stg-year-label').textContent = raporYear;
-  document.getElementById('month-detail-panel').style.display = 'none';
+  document.getElementById('rapor-year').textContent = raporYear;
 
-  const tlData  = buildAyData('TL');
-  const stgData = buildAyData('STG');
-  const tlTot   = renderAyTable(tlData,  'rapor-tbody',     'rapor-tfoot',     'TL',  'TL');
-  const stgTot  = renderAyTable(stgData, 'rapor-stg-tbody', 'rapor-stg-tfoot', 'STG', 'STG');
+  // Yıllık özet
+  const yilKayitlari = getRaporKayitlari(null);
+  let yTLPrim = 0, yTLKom = 0, ySTGPrim = 0, ySTGKom = 0;
+  yilKayitlari.forEach(m => {
+    const p = parseFloat(m.prim) || 0;
+    const k = parseFloat(m.komisyon) || 0;
+    const kom = p * k / 100;
+    if (currencyOf(m) === 'STG') { ySTGPrim += p; ySTGKom += kom; }
+    else { yTLPrim += p; yTLKom += kom; }
+  });
 
-  // Yıllık özet kartlar
-  const cards = document.getElementById('rapor-yillik-cards');
-  cards.innerHTML = `
-    <div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:0.8px;grid-column:1/-1">
-      ${raporYear} Yılı Özet
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px">
+  document.getElementById('rapor-yillik-cards').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
       <div class="stat-card" style="border-left:4px solid #1a73e8">
         <div class="stat-icon blue"><i class="fas fa-lira-sign"></i></div>
         <div class="stat-info">
-          <div style="font-size:10px;font-weight:700;color:#1a73e8;text-transform:uppercase;letter-spacing:0.5px">₺ SİGORTA — Prim</div>
-          <h3 style="font-size:18px">${formatMoney(tlTot.yPrim,'TL')}</h3>
-          <p>Komisyon: ${formatMoney(tlTot.yKom,'TL')} · ${tlTot.yCount} poliçe</p>
+          <div style="font-size:10px;font-weight:700;color:#1a73e8;text-transform:uppercase;letter-spacing:0.5px">₺ TL — Toplam Prim</div>
+          <h3>${formatMoney(yTLPrim,'TL')}</h3>
+          <p>Komisyon: ${formatMoney(yTLKom,'TL')}</p>
         </div>
       </div>
       <div class="stat-card" style="border-left:4px solid #e65100">
-        <div class="stat-icon orange"><i class="fas fa-car-crash"></i></div>
+        <div class="stat-icon orange"><i class="fas fa-pound-sign"></i></div>
         <div class="stat-info">
-          <div style="font-size:10px;font-weight:700;color:#e65100;text-transform:uppercase;letter-spacing:0.5px">£ KASKO — Prim</div>
-          <h3 style="font-size:18px">${formatMoney(stgTot.yPrim,'STG')}</h3>
-          <p>Komisyon: ${formatMoney(stgTot.yKom,'STG')} · ${stgTot.yCount} poliçe</p>
+          <div style="font-size:10px;font-weight:700;color:#e65100;text-transform:uppercase;letter-spacing:0.5px">£ STG — Toplam Prim</div>
+          <h3>${formatMoney(ySTGPrim,'STG')}</h3>
+          <p>Komisyon: ${formatMoney(ySTGKom,'STG')}</p>
         </div>
       </div>
       <div class="stat-card" style="border-left:4px solid var(--success)">
         <div class="stat-icon green"><i class="fas fa-file-contract"></i></div>
         <div class="stat-info">
           <div style="font-size:10px;font-weight:700;color:var(--success);text-transform:uppercase;letter-spacing:0.5px">Toplam Poliçe</div>
-          <h3>${tlTot.yCount + stgTot.yCount}</h3>
-          <p>TL: ${tlTot.yCount} · STG: ${stgTot.yCount}</p>
+          <h3>${yilKayitlari.length}</h3>
+          <p>${raporYear} yılı</p>
         </div>
       </div>
-    </div>
-  `;
+    </div>`;
+
+  // 12 ay kartları
+  const now = new Date();
+  document.getElementById('rapor-month-grid').innerHTML = AYLAR.map((ad, idx) => {
+    const ay = idx + 1;
+    const liste = getRaporKayitlari(ay);
+    const isCurrent = now.getFullYear() === raporYear && now.getMonth() === idx;
+    const isSelected = selectedMonth === idx;
+    let tlPrim = 0, stgPrim = 0, tlKom = 0, stgKom = 0;
+    liste.forEach(m => {
+      const p = parseFloat(m.prim) || 0;
+      const k = parseFloat(m.komisyon) || 0;
+      const kom = p * k / 100;
+      if (currencyOf(m) === 'STG') { stgPrim += p; stgKom += kom; }
+      else { tlPrim += p; tlKom += kom; }
+    });
+    const hasData = liste.length > 0;
+    const borderColor = isSelected ? 'var(--primary)' : isCurrent ? '#ff9800' : hasData ? '#27ae60' : 'var(--border)';
+    const bgColor = isSelected ? '#e8f0fe' : isCurrent ? '#fff8f0' : hasData ? '#f6fff6' : 'white';
+    return `<div onclick="selectMonth(${idx})" style="
+      background:${bgColor};border:2px solid ${borderColor};border-radius:12px;
+      padding:14px;cursor:pointer;transition:all 0.2s;${!hasData?'opacity:0.5;':''}
+    ">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <strong style="font-size:14px;color:var(--text)">${ad}</strong>
+        ${hasData ? `<span style="background:var(--primary);color:#fff;border-radius:20px;padding:2px 9px;font-size:11px;font-weight:700">${liste.length}</span>`
+                  : '<span style="color:var(--text-light);font-size:12px">—</span>'}
+      </div>
+      ${tlPrim > 0 ? `<div style="font-size:12px;color:#1a73e8;font-weight:600">₺ ${formatMoney(tlPrim,'TL')}</div>
+        <div style="font-size:10px;color:var(--text-light)">Kom: ${formatMoney(tlKom,'TL')}</div>` : ''}
+      ${stgPrim > 0 ? `<div style="font-size:12px;color:#e65100;font-weight:600;margin-top:4px">£ ${formatMoney(stgPrim,'STG')}</div>
+        <div style="font-size:10px;color:var(--text-light)">Kom: ${formatMoney(stgKom,'STG')}</div>` : ''}
+      ${!hasData ? '<div style="font-size:11px;color:var(--text-light)">Kayıt yok</div>' : ''}
+      ${isCurrent ? '<div style="font-size:10px;font-weight:700;color:#ff9800;margin-top:4px">● Bu ay</div>' : ''}
+    </div>`;
+  }).join('');
 }
 
-let selectedCur = 'TL';
-
-function selectMonth(idx, cur) {
-  if (selectedMonth === idx && selectedCur === cur) {
-    selectedMonth = null; selectedCur = 'TL';
-    renderRapor();
+function selectMonth(idx) {
+  if (selectedMonth === idx) {
+    selectedMonth = null;
     document.getElementById('month-detail-panel').style.display = 'none';
+    renderRapor();
     return;
   }
   selectedMonth = idx;
-  selectedCur   = cur || 'TL';
   renderRapor();
 
   const ay = idx + 1;
-  const liste = musteriler.filter(m => {
-    if (m.durum === 'iptal') return false;
-    const tarihStr = m.kayit_tarihi || m.baslangic;
-    const tarih = new Date(tarihStr);
-    return tarih.getFullYear() === raporYear && (tarih.getMonth() + 1) === ay
-        && currencyOf(m) === selectedCur;
-  });
-  const curLabel = selectedCur === 'STG' ? '£ STG KASKO' : '₺ TL SİGORTA';
+  const liste = getRaporKayitlari(ay);
   document.getElementById('month-detail-title').textContent =
-    `${AYLAR[idx]} ${raporYear} — ${curLabel} — ${liste.length} Poliçe`;
+    `${AYLAR[idx]} ${raporYear} — ${liste.length} Poliçe`;
+
+  let tlPrim = 0, stgPrim = 0, tlKom = 0, stgKom = 0;
+  liste.forEach(m => {
+    const p = parseFloat(m.prim) || 0;
+    const k = parseFloat(m.komisyon) || 0;
+    const kom = p * k / 100;
+    if (currencyOf(m) === 'STG') { stgPrim += p; stgKom += kom; }
+    else { tlPrim += p; tlKom += kom; }
+  });
+  document.getElementById('month-detail-summary').innerHTML = `
+    ${tlPrim > 0 ? `<div style="background:#e8f0fe;border-radius:8px;padding:8px 14px">
+      <div style="font-size:10px;font-weight:700;color:#1a73e8;text-transform:uppercase">₺ TL Prim</div>
+      <div style="font-size:16px;font-weight:700;color:#1a73e8">${formatMoney(tlPrim,'TL')}</div>
+      <div style="font-size:11px;color:#555">Komisyon: ${formatMoney(tlKom,'TL')}</div>
+    </div>` : ''}
+    ${stgPrim > 0 ? `<div style="background:#fff3e0;border-radius:8px;padding:8px 14px">
+      <div style="font-size:10px;font-weight:700;color:#e65100;text-transform:uppercase">£ STG Prim</div>
+      <div style="font-size:16px;font-weight:700;color:#e65100">${formatMoney(stgPrim,'STG')}</div>
+      <div style="font-size:11px;color:#555">Komisyon: ${formatMoney(stgKom,'STG')}</div>
+    </div>` : ''}
+    <div style="background:#f0fff0;border-radius:8px;padding:8px 14px">
+      <div style="font-size:10px;font-weight:700;color:var(--success);text-transform:uppercase">Toplam Poliçe</div>
+      <div style="font-size:16px;font-weight:700;color:var(--success)">${liste.length}</div>
+    </div>`;
 
   const tbody = document.getElementById('month-detail-tbody');
   if (liste.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-folder-open"></i><h3>Bu ay kayıt yok</h3></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--text-light)">
+      <i class="fas fa-folder-open" style="font-size:24px;display:block;margin-bottom:8px"></i>Bu ayda kayıt yok</td></tr>`;
   } else {
     tbody.innerHTML = liste.map(m => {
       const cur2 = currencyOf(m);
-      const p    = parseFloat(m.prim) || 0;
-      const k    = parseFloat(m.komisyon) || 0;
-      const kom  = p * k / 100;
-      const net  = p - kom;
-      const badge = cur2 === 'STG' ? `<span class="cur-badge-stg">£ STG</span>` : `<span class="cur-badge-tl">₺ TL</span>`;
+      const p = parseFloat(m.prim) || 0;
+      const k = parseFloat(m.komisyon) || 0;
+      const kom = p * k / 100;
       return `<tr>
         <td><div class="table-name">${m.adsoyad}</div></td>
         <td>${turBadge(m.alttur || m.tur)}</td>
         <td><code style="font-size:11px">${m.policeno || '—'}</code></td>
+        <td>${formatDate(m.baslangic)}</td>
         <td>${formatDate(m.bitis)}</td>
         <td class="prim-amount">${formatMoney(p, cur2)}</td>
         <td style="color:var(--success);font-weight:700">${k > 0 ? formatMoney(kom,cur2) : '—'}</td>
-        <td style="color:var(--danger);font-weight:700">${p > 0 ? formatMoney(net,cur2) : '—'}</td>
       </tr>`;
     }).join('');
   }
   const panel = document.getElementById('month-detail-panel');
   panel.style.display = '';
-  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
 }
 
 function closeMonthDetail() {
   selectedMonth = null;
-  selectedCur   = 'TL';
   document.getElementById('month-detail-panel').style.display = 'none';
   renderRapor();
 }
