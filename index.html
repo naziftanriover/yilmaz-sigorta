@@ -2830,8 +2830,11 @@ function saveMusteri() {
 
   if (!adsoyad)  { toast('Ad Soyad zorunludur!', 'error'); return; }
 
+  const bugun = new Date().toISOString().slice(0, 10);
+  const mevcutKayit = editingId ? musteriler.find(x => x.id === editingId) : null;
   const data = {
     id: editingId || Date.now().toString(),
+    kayit_tarihi: mevcutKayit?.kayit_tarihi || bugun,
     adsoyad,
     kimlik_tur: document.getElementById('f-kimlik-tur').value,
     tc:       document.getElementById('f-tc').value.trim(),
@@ -3332,8 +3335,10 @@ function buildAyData(cur) {
     const ay = idx + 1;
     const policyList = musteriler.filter(m => {
       if (m.durum === 'iptal') return false;
-      const bas = new Date(m.baslangic);
-      return bas.getFullYear() === raporYear && (bas.getMonth() + 1) === ay
+      // Kayıt tarihine göre filtrele (yoksa başlangıç tarihini kullan)
+      const tarihStr = m.kayit_tarihi || m.baslangic;
+      const tarih = new Date(tarihStr);
+      return tarih.getFullYear() === raporYear && (tarih.getMonth() + 1) === ay
           && currencyOf(m) === cur;
     });
     let prim = 0, komisyon = 0;
@@ -3447,8 +3452,9 @@ function selectMonth(idx, cur) {
   const ay = idx + 1;
   const liste = musteriler.filter(m => {
     if (m.durum === 'iptal') return false;
-    const bas = new Date(m.baslangic);
-    return bas.getFullYear() === raporYear && (bas.getMonth() + 1) === ay
+    const tarihStr = m.kayit_tarihi || m.baslangic;
+    const tarih = new Date(tarihStr);
+    return tarih.getFullYear() === raporYear && (tarih.getMonth() + 1) === ay
         && currencyOf(m) === selectedCur;
   });
   const curLabel = selectedCur === 'STG' ? '£ STG KASKO' : '₺ TL SİGORTA';
