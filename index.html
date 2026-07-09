@@ -1862,13 +1862,17 @@
           <label>Adres</label>
           <input type="text" id="f-adres" placeholder="Açık adres">
         </div>
+        <div class="form-group" id="f-plaka-group">
+          <label>Araç Plaka No</label>
+          <input type="text" id="f-plaka" placeholder="Örn: 34 ABC 123" oninput="this.value=this.value.toUpperCase()" style="text-transform:uppercase">
+        </div>
 
         <hr class="form-divider">
-        <div class="form-section-title">POLİÇE BİLGİLERİ</div>
+        <div class="form-section-title" id="f-police-title">POLİÇE BİLGİLERİ</div>
 
         <div class="form-group">
           <label>Sigorta Türü <span>*</span></label>
-          <select id="f-tur">
+          <select id="f-tur" onchange="onTurChange()">
             <option value="Araç">🚗 Araç / Kasko / Trafik</option>
             <option value="Sağlık">❤️ Sağlık Sigortası</option>
             <option value="Konut">🏠 Konut / DASK</option>
@@ -1877,9 +1881,10 @@
         </div>
         <div class="form-group">
           <label>Alt Tür</label>
-          <select id="f-alttur" onchange="hesaplaUcretler();updatePrimCurrency()">
+          <select id="f-alttur" onchange="hesaplaUcretler();updatePrimCurrency();onAltturChange()">
             <option value="Zorunlu Trafik">Zorunlu Trafik</option>
             <option value="Kasko">Kasko</option>
+            <option value="Kasko+Zorunlu">🔀 Kasko + Zorunlu Trafik</option>
             <option value="Bireysel Sağlık">Bireysel Sağlık</option>
             <option value="Tamamlayıcı Sağlık">Tamamlayıcı Sağlık</option>
             <option value="Konut">Konut</option>
@@ -1970,6 +1975,49 @@
             </div>
           </div>
         </div>
+        <!-- COMBO: 2. POLİÇE — ZORUNLU TRAFİK (sadece Kasko+Zorunlu seçilince görünür) -->
+        <div id="f-combo-section" class="form-group full" style="display:none">
+          <div style="border:2px dashed #e65100;border-radius:12px;padding:16px;background:#fff8f0">
+            <div style="font-size:12px;font-weight:800;color:#e65100;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px">
+              2. POLİÇE — ZORUNLU TRAFİK (₺ TL)
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="form-group">
+                <label>Poliçe Numarası</label>
+                <input type="text" id="f-policeno2" placeholder="Örn: TRF-2024-001">
+              </div>
+              <div class="form-group">
+                <label>Sigorta Şirketi</label>
+                <input type="text" id="f-sirket2" placeholder="Örn: Allianz, Axa...">
+              </div>
+              <div class="form-group">
+                <label>Başlangıç Tarihi</label>
+                <input type="date" id="f-baslangic2">
+              </div>
+              <div class="form-group">
+                <label>Bitiş Tarihi</label>
+                <input type="date" id="f-bitis2">
+              </div>
+              <div class="form-group">
+                <label>Prim <span style="font-size:11px;font-weight:700;padding:2px 7px;border-radius:8px;background:#fff3e0;color:#e65100">₺ TL</span></label>
+                <input type="number" id="f-prim2" placeholder="0.00" min="0" step="0.01" oninput="hesaplaUcretler2()">
+              </div>
+              <div class="form-group">
+                <label>Komisyon Oranı (%)</label>
+                <input type="number" id="f-komisyon2" placeholder="Örn: 20" min="0" max="100" step="0.1" oninput="hesaplaUcretler2()">
+              </div>
+              <div class="form-group">
+                <label>G. Fonu (₺)</label>
+                <input type="number" id="f-gfonu2" placeholder="0.00" min="0" step="0.01" oninput="hesaplaUcretler2(true)">
+              </div>
+              <div class="form-group">
+                <label>Bsiv (₺)</label>
+                <input type="number" id="f-bsiv2" placeholder="0.00" min="0" step="0.01" oninput="hesaplaUcretler2(true)">
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="form-group">
           <label>Ödeme Şekli</label>
           <select id="f-odeme">
@@ -2624,6 +2672,7 @@ function renderTable() {
         <td>
           <div class="table-name">${m.adsoyad}</div>
           <div class="table-sub">${m.kimlik_tur ? `<span style="font-size:10px;font-weight:700;color:var(--text-light)">${m.kimlik_tur === 'TC' ? '🇹🇷' : m.kimlik_tur === 'KKTC' ? '🇨🇾' : '🌍'} ${m.kimlik_tur}:</span> ` : ''}${m.tc || ''}</div>
+          ${m.plaka ? `<div class="table-sub" style="color:#e65100;font-weight:600">🚗 ${m.plaka}</div>` : ''}
         </td>
         <td>${m.telefon}</td>
         <td>${turBadge(m.tur)}${curBadge}</td>
@@ -2753,6 +2802,7 @@ function openEditModal(id) {
   document.getElementById('f-telefon').value   = m.telefon || '';
   document.getElementById('f-eposta').value    = m.eposta || '';
   document.getElementById('f-adres').value     = m.adres || '';
+  document.getElementById('f-plaka').value     = m.plaka || '';
   document.getElementById('f-tur').value       = m.tur || 'Araç';
   document.getElementById('f-alttur').value    = m.alttur || '';
   document.getElementById('f-policeno').value  = m.policeno || '';
@@ -2766,6 +2816,11 @@ function openEditModal(id) {
   document.getElementById('f-odeme').value     = m.odeme || 'Peşin';
   hesaplaUcretler();
   document.getElementById('f-notlar').value    = m.notlar || '';
+  // Düzenlemede combo bölümünü her zaman gizle (bireysel kayıt düzenlenir)
+  const cs3 = document.getElementById('f-combo-section'); if (cs3) cs3.style.display = 'none';
+  const pt3 = document.getElementById('f-police-title'); if (pt3) pt3.textContent = 'POLİÇE BİLGİLERİ';
+  const pg3 = document.getElementById('f-plaka-group'); if (pg3) pg3.style.display = m.tur === 'Araç' ? '' : 'none';
+  updatePrimCurrency();
   document.getElementById('modal-overlay').classList.add('open');
   closeDetail();
 }
@@ -2777,11 +2832,16 @@ function closeModal() {
 
 function clearForm() {
   document.getElementById('ucret-ozet-box').style.display = 'none';
-  ['f-adsoyad','f-tc','f-telefon','f-eposta','f-adres','f-policeno','f-sirket','f-prim','f-komisyon','f-gfonu','f-bsiv','f-notlar'].forEach(id => {
-    document.getElementById(id).value = '';
+  ['f-adsoyad','f-tc','f-telefon','f-eposta','f-adres','f-plaka','f-policeno','f-sirket','f-prim','f-komisyon','f-gfonu','f-bsiv','f-notlar',
+   'f-policeno2','f-sirket2','f-prim2','f-komisyon2','f-gfonu2','f-bsiv2'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
   });
-  document.getElementById('f-tur').value   = 'Araç';
-  document.getElementById('f-odeme').value = 'Peşin';
+  document.getElementById('f-tur').value    = 'Araç';
+  document.getElementById('f-alttur').value = 'Zorunlu Trafik';
+  document.getElementById('f-odeme').value  = 'Peşin';
+  const cs = document.getElementById('f-combo-section'); if (cs) cs.style.display = 'none';
+  const pt = document.getElementById('f-police-title'); if (pt) pt.textContent = 'POLİÇE BİLGİLERİ';
+  const pg = document.getElementById('f-plaka-group'); if (pg) pg.style.display = '';
 }
 
 // ─── KAYDET ──────────────────────────────────────────────────────────────────
@@ -2792,47 +2852,96 @@ function saveMusteri() {
   const policeno = document.getElementById('f-policeno').value.trim();
   const bitis    = document.getElementById('f-bitis').value;
   const bas      = document.getElementById('f-baslangic').value;
+  const alttur   = document.getElementById('f-alttur').value;
 
-  if (!adsoyad)  { toast('Ad Soyad zorunludur!', 'error'); return; }
+  if (!adsoyad) { toast('Ad Soyad zorunludur!', 'error'); return; }
 
   const bugun = new Date().toISOString().slice(0, 10);
   const mevcutKayit = editingId ? musteriler.find(x => x.id === editingId) : null;
-  const data = {
-    id: editingId || Date.now().toString(),
+
+  // Müşteri ortak bilgileri
+  const musteriBase = {
     kayit_tarihi: mevcutKayit?.kayit_tarihi || bugun,
     adsoyad,
     kimlik_tur: document.getElementById('f-kimlik-tur').value,
-    tc:       document.getElementById('f-tc').value.trim(),
+    tc:         document.getElementById('f-tc').value.trim(),
     telefon,
-    eposta:   document.getElementById('f-eposta').value.trim(),
-    adres:    document.getElementById('f-adres').value.trim(),
-    tur:      document.getElementById('f-tur').value,
-    alttur:   document.getElementById('f-alttur').value,
-    policeno,
-    sirket:   document.getElementById('f-sirket').value.trim(),
-    baslangic: bas,
-    bitis,
-    prim:     document.getElementById('f-prim').value,
-    gfonu:    document.getElementById('f-gfonu').value,
-    bsiv:     document.getElementById('f-bsiv').value,
-    toplam:   document.getElementById('f-bsiv').value
-              ? String( (parseFloat(document.getElementById('f-prim').value)||0)
-                      + (parseFloat(document.getElementById('f-gfonu').value)||0)
-                      + (parseFloat(document.getElementById('f-bsiv').value)||0) )
-              : document.getElementById('f-prim').value,
-    komisyon:    document.getElementById('f-komisyon').value,
-    odeme:       document.getElementById('f-odeme').value,
-    notlar:      document.getElementById('f-notlar').value.trim(),
-    para_birimi: document.getElementById('f-alttur').value === 'Kasko' ? 'STG' : 'TL',
+    eposta:     document.getElementById('f-eposta').value.trim(),
+    adres:      document.getElementById('f-adres').value.trim(),
+    plaka:      (document.getElementById('f-plaka')?.value || '').trim().toUpperCase(),
+    tur:        document.getElementById('f-tur').value,
+    odeme:      document.getElementById('f-odeme').value,
+    notlar:     document.getElementById('f-notlar').value.trim(),
   };
 
-  if (editingId) {
-    const idx = musteriler.findIndex(x => x.id === editingId);
-    if (idx !== -1) musteriler[idx] = data;
-    toast('Müşteri güncellendi ✓', 'success');
+  function calcToplam(primId, gfonuId, bsivId) {
+    const p = parseFloat(document.getElementById(primId)?.value) || 0;
+    const g = parseFloat(document.getElementById(gfonuId)?.value) || 0;
+    const b = parseFloat(document.getElementById(bsivId)?.value) || 0;
+    return g > 0 || b > 0 ? String(p + g + b) : String(p);
+  }
+
+  if (alttur === 'Kasko+Zorunlu' && !editingId) {
+    // İki ayrı kayıt oluştur
+    const now = Date.now();
+    const kasko = {
+      ...musteriBase,
+      id:          String(now),
+      alttur:      'Kasko',
+      policeno,
+      sirket:      document.getElementById('f-sirket').value.trim(),
+      baslangic:   bas,
+      bitis,
+      prim:        document.getElementById('f-prim').value,
+      gfonu:       document.getElementById('f-gfonu').value,
+      bsiv:        document.getElementById('f-bsiv').value,
+      toplam:      calcToplam('f-prim','f-gfonu','f-bsiv'),
+      komisyon:    document.getElementById('f-komisyon').value,
+      para_birimi: 'STG',
+    };
+    const zorunlu = {
+      ...musteriBase,
+      id:          String(now + 1),
+      alttur:      'Zorunlu Trafik',
+      policeno:    document.getElementById('f-policeno2')?.value.trim() || '',
+      sirket:      document.getElementById('f-sirket2')?.value.trim() || '',
+      baslangic:   document.getElementById('f-baslangic2')?.value || bas,
+      bitis:       document.getElementById('f-bitis2')?.value || bitis,
+      prim:        document.getElementById('f-prim2')?.value || '',
+      gfonu:       document.getElementById('f-gfonu2')?.value || '',
+      bsiv:        document.getElementById('f-bsiv2')?.value || '',
+      toplam:      calcToplam('f-prim2','f-gfonu2','f-bsiv2'),
+      komisyon:    document.getElementById('f-komisyon2')?.value || '',
+      para_birimi: 'TL',
+    };
+    musteriler.push(kasko);
+    musteriler.push(zorunlu);
+    toast('Kasko + Zorunlu Trafik eklendi ✓', 'success');
   } else {
-    musteriler.push(data);
-    toast('Müşteri eklendi ✓', 'success');
+    // Normal tek kayıt
+    const data = {
+      id:          editingId || Date.now().toString(),
+      ...musteriBase,
+      alttur,
+      policeno,
+      sirket:      document.getElementById('f-sirket').value.trim(),
+      baslangic:   bas,
+      bitis,
+      prim:        document.getElementById('f-prim').value,
+      gfonu:       document.getElementById('f-gfonu').value,
+      bsiv:        document.getElementById('f-bsiv').value,
+      toplam:      calcToplam('f-prim','f-gfonu','f-bsiv'),
+      komisyon:    document.getElementById('f-komisyon').value,
+      para_birimi: (alttur === 'Kasko') ? 'STG' : 'TL',
+    };
+    if (editingId) {
+      const idx = musteriler.findIndex(x => x.id === editingId);
+      if (idx !== -1) musteriler[idx] = data;
+      toast('Müşteri güncellendi ✓', 'success');
+    } else {
+      musteriler.push(data);
+      toast('Müşteri eklendi ✓', 'success');
+    }
   }
 
   save();
@@ -2867,6 +2976,7 @@ function showDetail(id) {
       <div class="detail-item"><label>Telefon</label><div class="val"><a href="tel:${m.telefon}" style="color:var(--primary-light)">${m.telefon}</a></div></div>
       <div class="detail-item"><label>E-posta</label><div class="val">${m.eposta ? `<a href="mailto:${m.eposta}" style="color:var(--primary-light)">${m.eposta}</a>` : '—'}</div></div>
       <div class="detail-item"><label>Adres</label><div class="val">${m.adres || '—'}</div></div>
+      ${m.plaka ? `<div class="detail-item"><label>Araç Plaka No</label><div class="val" style="font-weight:700;color:#e65100;font-size:15px">🚗 ${m.plaka}</div></div>` : ''}
       <div class="detail-item"><label>Poliçe Numarası</label><div class="val"><code>${m.policeno}</code></div></div>
       <div class="detail-item"><label>Sigorta Şirketi</label><div class="val">${m.sirket || '—'}</div></div>
       <div class="detail-item"><label>Başlangıç Tarihi</label><div class="val">${formatDate(m.baslangic)}</div></div>
@@ -3129,12 +3239,55 @@ function renderFinancials() {
 
 function updatePrimCurrency() {
   const alttur = document.getElementById('f-alttur').value;
-  const isStg  = alttur === 'Kasko';
+  const isStg  = alttur === 'Kasko' || alttur === 'Kasko+Zorunlu';
   const lbl    = document.getElementById('f-prim-label-cur');
   if (lbl) {
     lbl.textContent    = isStg ? '£ STG' : '₺ TL';
     lbl.style.background = isStg ? '#fff3e0' : '#e8f0fe';
     lbl.style.color      = isStg ? '#e65100' : '#1a73e8';
+  }
+}
+
+// ─── TÜR / ALTTUR DEĞİŞİM ───────────────────────────────────────────────────
+
+function onTurChange() {
+  const tur = document.getElementById('f-tur').value;
+  const pg  = document.getElementById('f-plaka-group');
+  if (pg) pg.style.display = tur === 'Araç' ? '' : 'none';
+  // Araç dışı seçilince combo seçeneğini sıfırla
+  if (tur !== 'Araç') {
+    const atEl = document.getElementById('f-alttur');
+    if (atEl && atEl.value === 'Kasko+Zorunlu') atEl.value = 'Zorunlu Trafik';
+    const cs = document.getElementById('f-combo-section'); if (cs) cs.style.display = 'none';
+    const pt = document.getElementById('f-police-title'); if (pt) pt.textContent = 'POLİÇE BİLGİLERİ';
+  }
+}
+
+function onAltturChange() {
+  const alttur = document.getElementById('f-alttur').value;
+  const cs = document.getElementById('f-combo-section');
+  const pt = document.getElementById('f-police-title');
+  const isCombo = alttur === 'Kasko+Zorunlu';
+  if (cs) cs.style.display = isCombo ? '' : 'none';
+  if (pt) pt.textContent = isCombo ? '1. POLİÇE — KASKO (£ STG)' : 'POLİÇE BİLGİLERİ';
+  // Tarih alanlarını 2. poliçeye kopyala (kolaylık için)
+  if (isCombo) {
+    const bas = document.getElementById('f-baslangic').value;
+    const bit = document.getElementById('f-bitis').value;
+    const b2  = document.getElementById('f-baslangic2');
+    const e2  = document.getElementById('f-bitis2');
+    if (b2 && !b2.value && bas) b2.value = bas;
+    if (e2 && !e2.value && bit) e2.value = bit;
+  }
+}
+
+function hesaplaUcretler2(manuelGiris = false) {
+  const prim = parseFloat(document.getElementById('f-prim2')?.value) || 0;
+  if (!manuelGiris && prim > 0) {
+    const gfonuEl = document.getElementById('f-gfonu2');
+    const bsivEl  = document.getElementById('f-bsiv2');
+    if (gfonuEl) gfonuEl.value = +(prim * 0.03).toFixed(2);
+    if (bsivEl)  bsivEl.value  = +(prim * 0.05).toFixed(2);
   }
 }
 
