@@ -3297,7 +3297,7 @@ function changeYear(delta) {
 function getRaporKayitlari(ay) {
   return musteriler.filter(m => {
     if (m.durum === 'iptal') return false;
-    const tarihStr = m.kayit_tarihi || m.baslangic;
+    const tarihStr = m.baslangic;
     if (!tarihStr) return false;
     const tarih = new Date(tarihStr);
     if (isNaN(tarih.getTime())) return false;
